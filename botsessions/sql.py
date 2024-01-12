@@ -2,9 +2,12 @@
 
 import sqlite3, os
 
-os.makedirs('vendidas', exist_ok=True)
-os.makedirs('arquivos', exist_ok=True)
-os.makedirs('enviadas', exist_ok=True)
+if not os.path.exists('vendidas'):
+    os.makedirs('vendidas', exist_ok=True)
+if not os.path.exists('arquivos'):
+    os.makedirs('arquivos', exist_ok=True)
+if not os.path.exists('enviadas'):
+    os.makedirs('enviadas', exist_ok=True)
 
 # Conexão com o banco de dados SQLite para usuários
 users_conn = sqlite3.connect('users.db')
