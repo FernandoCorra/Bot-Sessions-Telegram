@@ -1,0 +1,4 @@
+mercadopago
+aiogram==2.25.1
+faker
+telethon==1.33.1
