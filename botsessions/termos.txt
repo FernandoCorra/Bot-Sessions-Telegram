@@ -1,0 +1,25 @@
+﻿    📄 TERMOS DE USO 📖
+
+1 - Todas as session são verificadas antes de serem inseridas no bot e antes de serem enviadas para você, garantindo que estão ativas.
+
+2 - Você receberá um arquivo de log para cada session, com data e hora de verificação, provando que elas estavam ativas no momento do envio
+
+3 - A session é dependente de terceiros, especificamente do Telegram. Como tal, não temos controle ou garantias sobre suas políticas e funcionamento.
+
+4 - Garantimos a unicidade de cada session, assim você nunca receberá uma session duplicada.
+
+5- Possuímos um sistema de segurança anti-fraude que assegura que ninguém mais receberá uma sessão que você já adquiriu.
+
+6 - Após a compra, a responsabilidade sobre a session não é mais nossa. Como indicado no item 2, as sessões dependem inteiramente do Telegram e não podemos nos responsabilizar por eventuais problemas.
+
+7 - Caso a sessão seja banida após a compra, não oferecemos reembolso ou substituição.
+
+8 - Você será prontamente notificado sobre qualquer atualização em seu saldo.
+
+9 - Infracões ou violações de nossas regras resultarão em banimento.
+
+10 -  Clicando em Adicionar Saldo voce declara estar de acordo com nossos termos de uso .
+
+11 - Preços referentes a tabela de valores podem ser alterados a qualquer momento sem aviso prévio .
+
+12 - Esses termos podem ser alterado a qualquer momento sem aviso prévio .
