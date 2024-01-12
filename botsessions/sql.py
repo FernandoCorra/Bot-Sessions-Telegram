@@ -1,9 +1,12 @@
-# -*- coding: latin1 -*-
+# -*- coding: utf-8 -*-
 
-import sqlite3
+import sqlite3, os
 
+os.makedirs('vendidas', exist_ok=True)
+os.makedirs('arquivos', exist_ok=True)
+os.makedirs('enviadas', exist_ok=True)
 
-# Conex„o com o banco de dados SQLite para usu·rios
+# Conex√£o com o banco de dados SQLite para usu√°rios
 users_conn = sqlite3.connect('users.db')
 users_cursor = users_conn.cursor()
 users_cursor.execute('''
@@ -28,9 +31,9 @@ conn.commit()
 conn.close()
 
 
-# FunÁ„o para inserir informaÁıes sobre a compra no banco de dados
+# Fun√ß√£o para inserir informa√ß√µes sobre a compra no banco de dados
 def insert_purchase(chat_id, sessions):
-    # Converte a lista de sessions em uma ˙nica string separada por vÌrgulas
+    # Converte a lista de sessions em uma √∫nica string separada por v√≠rgulas
     sessions_str = ", ".join(sessions)
     
     conn = sqlite3.connect('vendidas.db')
@@ -39,7 +42,7 @@ def insert_purchase(chat_id, sessions):
     conn.commit()
     conn.close()
 
-# FunÁ„o para obter as sessions compradas por um chat_id
+# Fun√ß√£o para obter as sessions compradas por um chat_id
 def get_purchased_sessions(chat_id):
     conn = sqlite3.connect('vendidas.db')
     cursor = conn.cursor()
@@ -51,14 +54,14 @@ def get_purchased_sessions(chat_id):
     return None
 
 
-# FunÁ„o para obter o saldo do usu·rio do banco de dados
+# Fun√ß√£o para obter o saldo do usu√°rio do banco de dados
 def get_user_balance(chat_id):
     users_cursor.execute("SELECT saldo FROM users WHERE chat_id=?", (chat_id,))
     current_balance = users_cursor.fetchone()[0]
     return current_balance
 
 
-# FunÁ„o para atualizar o saldo do usu·rio no banco de dados
+# Fun√ß√£o para atualizar o saldo do usu√°rio no banco de dados
 def update_user_balance(chat_id, new_balance):
     users_cursor.execute("UPDATE users SET saldo=? WHERE chat_id=?", (new_balance, chat_id))
     users_conn.commit()
