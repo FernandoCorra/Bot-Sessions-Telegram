@@ -1,4 +1,0 @@
-mercadopago
-aiogram
-faker
-telethon
