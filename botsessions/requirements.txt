@@ -1,0 +1,4 @@
+mercadopago
+aiogram
+faker
+telethon
