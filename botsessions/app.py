@@ -1,8 +1,11 @@
-﻿import logging
+
+
+import logging
 import sqlite3
 import os
 import asyncio
 import zipfile
+import pytz
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
@@ -75,6 +78,19 @@ def get_sesssions_compradas(chat_id):
     else:
         return None
 
+def get_saudacao():
+    
+    fuso_horario = pytz.timezone('America/Sao_Paulo') 
+    hora_atual = datetime.datetime.now(fuso_horario).hour
+
+    if 6 <= hora_atual < 12:
+        return "Bom dia!"
+    elif 12 <= hora_atual < 18:
+        return "Boa tarde!"
+    else:
+        return "Boa noite!"    
+        
+
 @dp.callback_query_handler(lambda c: c.data == "preços")
 async def send_price_table(callback_query: types.CallbackQuery):
     price_table = (
@@ -117,7 +133,7 @@ async def start(message: types.Message):
     available_sessions = len(session_files)
     # Criando a mensagem com o texto
     message_text = (
-        f"Bom Dia, {message.from_user.first_name} Como posso te ajudar?"
+        f"{get_saudacao()}, {message.from_user.first_name} Como posso te ajudar?"
         f"Temos atualmente {available_sessions} sessões disponíveis"
     )
     
@@ -377,11 +393,10 @@ async def view_balance(callback_query: types.CallbackQuery):
     session_files = os.listdir("arquivos")
     available_sessions = len(session_files)
     # Criando a mensagem com o texto
-    message_text = f"""
-    Bom Dia, {callback_query.from_user.first_name} Como posso te ajudar?
-Temos atualmente {available_sessions} sessões disponíveis
-
-    """
+    message_text = (
+        f"{get_saudacao()}, {callback_query.from_user.first_name} Como posso te ajudar?"
+        f"Temos atualmente {available_sessions} sessões disponíveis"
+    )
 
     buttons1 = types.InlineKeyboardMarkup(row_width=1)  # Exibe 2 botões por linha
     buttons1.add(
@@ -1438,7 +1453,7 @@ async def handle_zip(message: types.Message):
             )
             
             if sessions_boas > 1:
-                text = f"""{sessions_boas} novas sessions adicionadas corra e adquira a sua"""
+                text = f"{get_saudacao()} \n{sessions_boas} novas sessions adicionadas \ncorra e adquira a sua"
                 users_cursor.execute("SELECT chat_id FROM users")
                 await bot.send_message(message.from_user.id, "Começando Envio das Mensagens")
                 chat_ids = [row[0] for row in users_cursor.fetchall()]
