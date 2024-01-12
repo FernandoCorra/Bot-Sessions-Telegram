@@ -78,12 +78,12 @@ def get_sesssions_compradas(chat_id):
 @dp.callback_query_handler(lambda c: c.data == "preços")
 async def send_price_table(callback_query: types.CallbackQuery):
     price_table = (
-        "📋 Tabelas de valores :\n\n"
-        "📊 Ao comprar a partir de: 1\n💵 O valor por unidade é: R$ {MENORQUE10}\n\n"
-        "📊 Ao comprar a partir de: 10\n💵 O valor por unidade é: R$ {MAIORQUE10MENORQUE50}\n\n"
-        "📊 Ao comprar a partir de: 50\n💵 O valor por unidade é: R$ {MAIORQUE50MENORQUE100}\n\n"
-        "📊 Ao comprar a partir de: 100\n💵 O valor por unidade é: R$ {MAIORQUE100}\n\n"
-        "Boas compras 😊"
+        f"📋 Tabelas de valores :\n\n"
+        f"📊 Ao comprar a partir de: 1\n💵 O valor por unidade é: R$ {MENORQUE10}\n\n"
+        f"📊 Ao comprar a partir de: 10\n💵 O valor por unidade é: R$ {MAIORQUE10MENORQUE50}\n\n"
+        f"📊 Ao comprar a partir de: 50\n💵 O valor por unidade é: R$ {MAIORQUE50MENORQUE100}\n\n"
+        f"📊 Ao comprar a partir de: 100\n💵 O valor por unidade é: R$ {MAIORQUE100}\n\n"
+        f"Boas compras 😊"
     )
 
     a = idstart.get(callback_query.from_user.id, {})
