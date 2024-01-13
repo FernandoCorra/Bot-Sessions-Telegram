@@ -13,18 +13,18 @@ def get_payment(price, description):
         "description": str(description),
         "payment_method_id": "pix",
         "payer": {
-            "email": "luigi3520@gmail.com",
-            "first_name": "Luigi",
-            "last_name": "Rovani",
+            "email": "thayanello@hotmail.com",
+            "first_name": "Leticia",
+            "last_name": "Lopes",
             "identification": {
                 "type": "CPF",
-                "number": "09018841978"
+                "number": "36473976876"
             },
             "address": {
                 "zip_code": "12576-624",
                 "street_name": "Rua Itabaiana",
                 "street_number": "1",
-                "neighborhood": "ItaguaÃ§u",
+                "neighborhood": "Itaguaçu",
                 "city": "Aparecida",
                 "federal_unit": "SP"
             }
