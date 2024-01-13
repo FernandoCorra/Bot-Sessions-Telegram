@@ -24,38 +24,41 @@ def get_credenciais():
     credenciais = {}
 
     try:
-        # Seção 'contas'
+        # SeÃ§Ã£o 'contas'
         credenciais['IDADM'] = int(config['contas']['IDADM'])
         credenciais['IDGRUPOCOMPRA'] = int(config['contas']['IDGRUPOCOMPRA'])
         credenciais['IDGRUPODEPOSITO'] = int(config['contas']['IDGRUPODEPOSITO'])
         credenciais['SUPORTECONTATO'] = config['contas']['SUPORTECONTATO']
 
-        # Seção 'valores'
+        # SeÃ§Ã£o 'valores'
         credenciais['MINIMODEPOSITO'] = float(config['valores']['MINIMODEPOSITO'])
         credenciais['MENORQUE10'] = float(config['valores']['MENORQUE10'])
         credenciais['MAIORQUE10MENORQUE50'] = float(config['valores']['MAIORQUE10MENORQUE50'])
         credenciais['MAIORQUE50MENORQUE100'] = float(config['valores']['MAIORQUE50MENORQUE100'])
         credenciais['MAIORQUE100'] = float(config['valores']['MAIORQUE100'])
 
-        # Seção 'api'
+        # SeÃ§Ã£o 'api'
         credenciais['api_id'] = config.get('api', 'api_id', fallback='123')
         credenciais['api_hash'] = config.get('api', 'api_hash', fallback='123')
         credenciais['BOT_TOKEN'] = config['api']['BOT_TOKEN']
 
-        # Seção 'mercadopago'
+        # SeÃ§Ã£o 'mercadopago'
         credenciais['mercadopago_api'] = config['mercadopago']['api_token']
         credenciais['timeout'] = int(config['mercadopago']['timeout'])
         
-        # seção 'telethon'
+        # seÃ§Ã£o 'telethon'
         credenciais['MUDAR_NOME'] = config.getboolean('telethon', 'MUDAR_NOME')
         credenciais['VERIFICAR'] = config.getboolean('telethon', 'VERIFICAR')
 
+        # seÃ§Ã£o 'runtime'
+        credenciais['timezone'] = config['runtime']['time_zone']
+        
         return credenciais
     
     except Exception as e:
         raise CredenciaisError((
             f"Erro: Problema na chave {str(e)} ou tipo incorreto \n"
-            "configure o config.ini com todas as chaves necessárias"
+            "configure o config.ini com todas as chaves necessÃ¡rias"
         ))
 
 credenciais = get_credenciais()
