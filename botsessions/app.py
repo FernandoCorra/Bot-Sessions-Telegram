@@ -1,5 +1,3 @@
-
-
 import logging
 import sqlite3
 import os
@@ -28,13 +26,14 @@ MAIORQUE100 = credenciais['MAIORQUE100']
 MUDAR_NOME = credenciais['MUDAR_NOME']
 SUPORTECONTATO = credenciais['SUPORTECONTATO']
 BOT_TOKEN = credenciais['BOT_TOKEN']
-TIMEOUT = credenciais['timeout']    
+TIMEOUT = credenciais['timeout'] 
 
-# Substitua 'YOUR_BOT_TOKEN' pelo token do seu bot fornecido pelo BotFather do Telegram
+
+# Substitua 'BOT_TOKEN' em config.ini pelo token do seu bot fornecido pelo BotFather
 bot = Bot(BOT_TOKEN)
 dp = Dispatcher(bot)
 
-# Configuração de log para monitorar as interações do bot
+#Configuração de log para monitorar as interações do bot
 logging.basicConfig(level=logging.INFO)
 dp.middleware.setup(LoggingMiddleware())
 
@@ -80,8 +79,8 @@ def get_sesssions_compradas(chat_id):
 
 def get_saudacao():
     
-    fuso_horario = pytz.timezone('America/Sao_Paulo') 
-    hora_atual = datetime.datetime.now(fuso_horario).hour
+    fuso_horario = pytz.timezone(credenciais['timezone']) 
+    hora_atual = datetime.now(fuso_horario).hour
 
     if 6 <= hora_atual < 12:
         return "Bom dia!"
@@ -133,7 +132,7 @@ async def start(message: types.Message):
     available_sessions = len(session_files)
     # Criando a mensagem com o texto
     message_text = (
-        f"{get_saudacao()}, {message.from_user.first_name} Como posso te ajudar?"
+        f"{get_saudacao()} {message.from_user.first_name} Como posso te ajudar? "
         f"Temos atualmente {available_sessions} sessões disponíveis"
     )
     
@@ -143,7 +142,7 @@ async def start(message: types.Message):
         types.InlineKeyboardButton("📊 Tabela de valores", callback_data="preços"),
         types.InlineKeyboardButton("📦 Comprar session", callback_data="comprar_sessions"),
         types.InlineKeyboardButton("🏦 Adicionar saldo", callback_data="recarregar"),
-        types.InlineKeyboardButton("🤖 Bot Leads", callback_data="leads"),
+        types.InlineKeyboardButton("🤖 Bot de Adição", callback_data="leads"),
         types.InlineKeyboardButton("🧑 Preciso de ajuda", callback_data="suporte"),
         types.InlineKeyboardButton("📂 Minhas sessions", callback_data="sessions_compradas")
     )
@@ -394,7 +393,7 @@ async def view_balance(callback_query: types.CallbackQuery):
     available_sessions = len(session_files)
     # Criando a mensagem com o texto
     message_text = (
-        f"{get_saudacao()}, {callback_query.from_user.first_name} Como posso te ajudar?"
+        f"{get_saudacao()} {callback_query.from_user.first_name} Como posso te ajudar?"
         f"Temos atualmente {available_sessions} sessões disponíveis"
     )
 
@@ -404,7 +403,7 @@ async def view_balance(callback_query: types.CallbackQuery):
         types.InlineKeyboardButton("📊 Tabela de valores", callback_data="preços"),
         types.InlineKeyboardButton("📦 Comprar session", callback_data="comprar_sessions"),
         types.InlineKeyboardButton("🏦 Adicionar saldo", callback_data="recarregar"),
-        types.InlineKeyboardButton("🤖 Bot Leads", callback_data="leads"),
+        types.InlineKeyboardButton("🤖 Bot de Adição ", callback_data="leads"),
         types.InlineKeyboardButton("🧑 Preciso de ajuda", callback_data="suporte"),
         types.InlineKeyboardButton("📂 Minhas sessions", callback_data="sessions_compradas")
 
@@ -647,72 +646,89 @@ async def ask_for_deposit_amount(callback_query: types.CallbackQuery):
 
 @dp.callback_query_handler(lambda c: c.data.startswith("gerar_"))
 async def ask_for_deposit_amount(callback_query: types.CallbackQuery):
+    
+        
     deposit_value1 = callback_query.data[6:]
     deposit_value = int(deposit_value1)
     chat_id = callback_query.from_user.id
     chave_pix, id_pagamento = get_payment(deposit_value, "sms")
-
-    text = (
-        f"✅ Pagamento gerado\n"
-        f"⚠️ Está com problemas no pagamento? Tente pagar meio de outro banco!\n"
-        f"💵 Valor: R$ {deposit_value}\n"
-        f"⏱ Prazo de expiração: {TIMEOUT} Minutos\n"
-        f"💠 Pix Copia e Cola:\n\n"
-        f"`{chave_pix}`\n\n"
-        f"💡 Dica: Clique no código acima para copiá-lo.\n"
-        f"Após o pagamento seu saldo será creditado automaticamente."
-    )
-
-    await  bot.edit_message_text(chat_id=callback_query.from_user.id, text=text, message_id=callback_query.message.message_id, parse_mode="Markdown")
-
-    user_name = callback_query.from_user.id
-    IDGRUPO = IDGRUPODEPOSITO
-    a = 0
-    c = 1
-    payment_verified = False
-    try:
-        payment_verified = await asyncio.wait_for(verify_payment(id_pagamento), timeout=TIMEOUT*60)
-    except asyncio.TimeoutError:
-        new_text = "🔴🔴PIX EXPIRADO🔴🔴 "
-        buttons1 = types.InlineKeyboardMarkup(row_width=2)
-        buttons1.add(types.InlineKeyboardButton("VOLTAR 🔙", callback_data="voltar"))
-        await bot.edit_message_text(
-            chat_id=chat_id, message_id=callback_query.message.message_id, 
-            text=new_text, reply_markup=buttons1
-        )
-
-    if payment_verified == True:
-        users_cursor.execute("SELECT saldo FROM users WHERE chat_id=?", (chat_id,))
-        current_balance = users_cursor.fetchone()[0]
-        new_balance = float(current_balance) + float(deposit_value)
-
-        users_cursor.execute("UPDATE users SET saldo=? WHERE chat_id=?", (new_balance, chat_id))
-        users_conn.commit()
-
+    if chave_pix:
+        
         text = (
-            f"🟢Seu depósito de {deposit_value} foi adicionado!\n"
-            f"🟢Seu saldo atual é R${new_balance:.2f}"
+            f"✅ Pagamento gerado\n"
+            f"⚠️ Está com problemas no pagamento? Tente pagar meio de outro banco!\n"
+            f"💵 Valor: R$ {deposit_value}\n"
+            f"⏱ Prazo de expiração: {TIMEOUT} Minutos\n"
+            f"💠 Pix Copia e Cola:\n\n"
+            f"`{chave_pix}`\n\n"
+            f"💡 Dica: Clique no código acima para copiá-lo.\n"
+            f"Após o pagamento seu saldo será creditado automaticamente."
         )
-        a = 1
+
+        await  bot.edit_message_text(
+            chat_id=callback_query.from_user.id, text=text, 
+            message_id=callback_query.message.message_id, parse_mode="Markdown"
+        )
+
+        user_name = callback_query.from_user.id
+        IDGRUPO = IDGRUPODEPOSITO
+        payment_verified = False
+        
+        try:
+            payment_verified = await asyncio.wait_for(verify_payment(id_pagamento), TIMEOUT*60)
+        except asyncio.TimeoutError:
+            new_text = "🔴🔴PIX EXPIRADO🔴🔴 "
+            buttons1 = types.InlineKeyboardMarkup(row_width=2)
+            buttons1.add(types.InlineKeyboardButton("VOLTAR 🔙", callback_data="voltar"))
+            await bot.edit_message_text(
+                chat_id=chat_id, message_id=callback_query.message.message_id, 
+                text=new_text, reply_markup=buttons1
+            )
+            text, abouttext = None, None
+
+        if payment_verified:
+            users_cursor.execute("SELECT saldo FROM users WHERE chat_id=?", (chat_id,))
+            current_balance = users_cursor.fetchone()[0]
+            new_balance = float(current_balance) + float(deposit_value)
+
+            users_cursor.execute("UPDATE users SET saldo=? WHERE chat_id=?", (new_balance, chat_id))
+            users_conn.commit()
+
+            text = (
+                f"🟢Seu depósito de {deposit_value} foi adicionado!\n"
+                f"🟢Seu saldo atual é R${new_balance:.2f}"
+            )
+
+            abouttext = (
+                f"✅Saldo Adicionado por {user_name}🔥 !\n"
+                f"📲ID: {chat_id}\n"
+                f"📲USERNAME: @{callback_query.from_user.username}\n"
+                f"🛒Valor: {deposit_value}"
+            )
+    
+    else:
+        text = "⚠️ Estamos com problemas para gerar seu pagamento\n Volte mais tarde"
+        abouttext = (
+            f"✅Saldo para {user_name}🔥 !\n"
+            f"Não pode ser adicionado \n"
+            f"Erro: {id_pagamento} \n"
+            f"Verifique imediatamente o bot"
+        )            
+        
+    if text and abouttext:
         buttons1 = types.InlineKeyboardMarkup(row_width=2)
         buttons1.add(types.InlineKeyboardButton("VOLTAR 🔙", callback_data="voltar"))
         await  bot.edit_message_text(
             chat_id=callback_query.from_user.id, 
             text=text, message_id=callback_query.message.message_id, reply_markup=buttons1
         )
-
-        abouttext = (
-            f"✅Saldo Adicionado por {user_name}🔥 !\n"
-            f"📲ID: {chat_id}\n"
-            f"📲USERNAME: @{callback_query.from_user.username}\n"
-            f"🛒Valor: {deposit_value}"
-        )
         await bot.send_message(IDGRUPO, abouttext)
-
+        
 compra = {}
 
 @dp.callback_query_handler(lambda c: c.data == "alto11")
 async def ask_for_deposit_amount(callback_query: types.CallbackQuery):
+    
     aldo = compra.get(callback_query.from_user.id, {})
     session_files = os.listdir("arquivos")
     available_sessions = len(session_files)
