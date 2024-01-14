@@ -7,7 +7,6 @@ import zipfile
 import random
 import logging
 import configparser
-import tempfile
 from telethon import TelegramClient, utils
 from datetime import datetime
 from telethon.tl.functions.account import UpdateProfileRequest
@@ -83,7 +82,7 @@ async def start(session, change_name=False):
     phone = os.path.basename(session).replace('.session', '')
     logger = logging.getLogger(f'log_{phone}')
     logger.setLevel(logging.DEBUG)
-    handle_novo = logging.FileHandler(f'{os.path.dirname(session)}/{phone}.log')
+    handle_novo = logging.FileHandler(f'{os.path.dirname(session)}/{phone}.log', mode='w')
     logger.addHandler(handle_novo)
     logger.debug(
         f'\nLogando em {phone} Data: {datetime.now().strftime("%d-%m-%y_%H-%M")}\n'
@@ -122,7 +121,12 @@ async def start(session, change_name=False):
 async def get_sessions_send(quantidade):
     
     sessions = []
-    temp_dir = tempfile.mkdtemp()
+    countt = 0
+    
+    temp_dir = os.path.join(os.getcwd(), 'sessions')
+    if os.path.exists(temp_dir):
+        shutil.rmtree(temp_dir)
+    os.makedirs(temp_dir)
     
     for session in get_sessions('arquivos'):
         
@@ -136,11 +140,13 @@ async def get_sessions_send(quantidade):
             if (await start(path)):
                 sessions.append(path)
                 sessions.append(f'{temp_dir}/{phone}.log')
+                countt += 1
         else:
             await asyncio.sleep(0.001)
             sessions.append(path)
+            countt += 1
             
-        if len(sessions) >= quantidade:
+        if countt >= quantidade:
             break
         
     return sessions
@@ -181,4 +187,3 @@ async def verificar_sessions(downloaded_file, path, mudar_nome):
     return len(sessions_boas), count_banidas
 
 
-    
