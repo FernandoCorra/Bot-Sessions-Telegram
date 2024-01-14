@@ -1,10 +1,10 @@
 import mercadopago
-import asyncio 
+import asyncio
+from verificar import get_credenciais
 
-with open('apimercadopago.txt', 'r') as f:
-    APIMERCADO = f.read().strip()
-
+APIMERCADO = get_credenciais()['mercadopago_api']
 credentials = {'access_token' : APIMERCADO  }
+
 
 def get_payment(price, description):
     sdk = mercadopago.SDK(APIMERCADO)
@@ -30,23 +30,23 @@ def get_payment(price, description):
             }
         }
     }
+    
     payment_response = sdk.payment().create(payment_data)
-    payment = payment_response["response"]
-    data = payment['point_of_interaction']['transaction_data']
-    return [str(data['qr_code']),str(payment['id'])]
+    if payment_response['status'] == 201:
+        payment = payment_response["response"]
+        data = payment['point_of_interaction']['transaction_data']
+        return [str(data['qr_code']),str(payment['id'])]
+    else:
+        return None, payment_response['response']['message']
 
 
 async def verify_payment(payment_id):
     sdk = mercadopago.SDK(APIMERCADO)
+    await asyncio.sleep(15)
     payment_response = await asyncio.to_thread(sdk.payment().get, int(payment_id))
     payment = payment_response["response"]
-    status = payment['status']
-    detail = payment['status_detail']
-    
-    if detail == "accredited" and status == "approved":
-        p = True
+    if payment['status'] == "approved" and payment['status_detail'] == "accredited":
+        return True
     else:
-        p = False
+        return await verify_payment(payment_id)
         
-    return p
-
